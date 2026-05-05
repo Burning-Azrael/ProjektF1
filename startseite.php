@@ -1,6 +1,3 @@
-<?php
-?>
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -30,7 +27,10 @@
 body {
     height: 100vh;
     /* Dynamisches Hintergrundbild mit Formel 1 Bezug */
-    background: url("https://e0.365dm.com/23/03/768x432/skysports-oscar-piastri-mclaren_6099085.jpg?20230324144314") no-repeat center center/cover;
+    background-image: url("https://media.formula1.com/image/upload/t_16by9Centre/c_lfill,w_3392/q_auto/v1740000001/fom-website/2025/Ferrari/Ferrari%20SF-25%20launch%20renders/F677_still_02_v11_169.webp");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,8 +43,8 @@ body::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(21,21,30,0.5) 100%);
-    backdrop-filter: blur(5px);
+    background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(21,21,30,0.1) 100%);
+    /* Blur entfernt, damit das tolle neue Bild gestochen scharf bleibt */
     z-index: 1;
 }
 
@@ -132,12 +132,12 @@ p {
 /* Buttons */
 .button-group {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    gap: 15px;
+    margin-top: 25px;
 }
 
 .btn {
-    width: 100%;
+    flex: 1;
     padding: 16px;
     border-radius: 14px;
     font-size: 16px;
