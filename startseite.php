@@ -209,6 +209,28 @@ p {
 .primary:hover .arrow-icon {
     transform: translateX(4px);
 }
+
+/* Admin Button */
+.admin-btn {
+    display: inline-block;
+    margin-top: 25px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
 </style>
 
 </head>
@@ -233,6 +255,9 @@ p {
             Anmelden
         </button>
     </div>
+
+    <!-- Admin Button -->
+    <a href="admin.php" class="admin-btn">⚙️ Adminbereich</a>
 
 </div>
 

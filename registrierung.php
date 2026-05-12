@@ -1,5 +1,15 @@
 <?php
 
+// Datenbankverbindung (Bitte ggf. anpassen)
+$db_host = 'localhost';
+$db_user = 'root';
+$db_pass = '';
+$db_name = 'f1shop'; 
+
+$conn = @new mysqli($db_host, $db_user, $db_pass, $db_name);
+
+$phpError = '';
+
 //  1. Prüfen ob Felder leer sind
 function felderLeer($vorname, $nachname, $email, $passwort) {
     return empty($vorname) || empty($nachname) || empty($email) || empty($passwort);
@@ -12,7 +22,8 @@ function emailUngueltig($email) {
 
 // 3. Prüfen ob E-Mail bereits existiert
 function emailExistiert($conn, $email) {
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT kid FROM konto WHERE email = ?");
+    if (!$stmt) return false;
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
@@ -27,12 +38,44 @@ function emailExistiert($conn, $email) {
 function benutzerErstellen($conn, $vorname, $nachname, $email, $passwort) {
     $hash = password_hash($passwort, PASSWORD_DEFAULT);
 
-    $stmt = $conn->prepare("INSERT INTO users (vorname, nachname, email, passwort) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO konto (vorname, nachname, email, passwort) VALUES (?, ?, ?, ?)");
+    if (!$stmt) return false;
     $stmt->bind_param("ssss", $vorname, $nachname, $email, $hash);
 
     return $stmt->execute();
 }
 
+// 5. Formularverarbeitung
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $vorname = trim($_POST['vorname'] ?? '');
+    $nachname = trim($_POST['nachname'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $passwort = $_POST['passwort'] ?? '';
+    $passwort2 = $_POST['passwort2'] ?? '';
+    $agb = isset($_POST['agb']);
+
+    if (felderLeer($vorname, $nachname, $email, $passwort) || empty($passwort2) || !$agb) {
+        $phpError = "Bitte füllen Sie alle erforderlichen Felder aus.";
+    } elseif ($passwort !== $passwort2) {
+        $phpError = "Die Passwörter stimmen nicht überein.";
+    } elseif (emailUngueltig($email)) {
+        $phpError = "Die E-Mail-Adresse ist ungültig.";
+    } elseif ($conn->connect_error) {
+        $phpError = "Datenbankverbindung fehlgeschlagen. Bitte Datenbank konfigurieren.";
+    } else {
+        if (emailExistiert($conn, $email)) {
+            $phpError = "Diese E-Mail-Adresse ist bereits registriert.";
+        } else {
+            if (benutzerErstellen($conn, $vorname, $nachname, $email, $passwort)) {
+                // Erfolgreich -> Weiterleitung zum Login
+                header("Location: login.php");
+                exit();
+            } else {
+                $phpError = "Fehler bei der Registrierung aufgetreten. Versuch es später noch einmal.";
+            }
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -183,6 +226,38 @@ input:focus {
     outline: none;
 }
 
+/* Checkbox */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-red);
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    font-size: 14px;
+    color: #a0a0b0;
+    cursor: pointer;
+}
+
+.checkbox-group label a {
+    color: white;
+    text-decoration: underline;
+    text-decoration-color: var(--primary-red);
+}
+
+.checkbox-group label a:hover {
+    color: var(--primary-red);
+}
+
 /* Buttons */
 .button-group {
     display: flex;
@@ -287,21 +362,34 @@ button[type="reset"]:active {
     <h2>Join the Paddock</h2>
     <p class="subtitle">Erstelle deinen exklusiven Account</p>
 
-    <form action="register_process.php" method="POST" id="registerForm">
+    <form action="registrierung.php" method="POST" id="registerForm">
         
-        <div id="message"></div>
+        <div id="message">
+            <?php if (!empty($phpError)): ?>
+                <div class="error"><?php echo htmlspecialchars($phpError); ?></div>
+            <?php endif; ?>
+        </div>
 
         <div class="row">
-            <input type="text" name="vorname" placeholder="Vorname">
-            <input type="text" name="nachname" placeholder="Nachname">
+            <input type="text" name="vorname" placeholder="Vorname" required>
+            <input type="text" name="nachname" placeholder="Nachname" required>
         </div>
 
         <div class="input-group">
-            <input type="email" name="email" placeholder="E-Mail Adresse">
+            <input type="email" name="email" placeholder="E-Mail Adresse" required>
         </div>
 
         <div class="input-group">
-            <input type="password" name="passwort" placeholder="Sicheres Passwort">
+            <input type="password" id="passwort" name="passwort" placeholder=" Passwort" required>
+        </div>
+        
+        <div class="input-group">
+            <input type="password" id="passwort2" name="passwort2" placeholder="Passwort wiederholen" required>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="agb" name="agb" required>
+            <label for="agb">Ich stimme den <a href="#">AGB</a> und der <a href="#">Datenschutzerklärung</a> zu.</label>
         </div>
 
         <div class="button-group">
@@ -315,15 +403,35 @@ button[type="reset"]:active {
 
 <script>
 document.getElementById("registerForm").addEventListener("submit", function(e) {
-    let inputs = this.querySelectorAll("input");
+    let textInputs = this.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]');
+    let checkbox = document.getElementById("agb");
+    let passwort1 = document.getElementById("passwort");
+    let passwort2 = document.getElementById("passwort2");
     let message = document.getElementById("message");
 
-    for (let input of inputs) {
+    message.innerHTML = "";
+
+    // 1. Prüfen ob alle Textfelder ausgefüllt sind
+    for (let input of textInputs) {
         if (!input.value.trim()) {
             e.preventDefault();
             message.innerHTML = '<div class="error">Bitte alle Felder ausfüllen.</div>';
             return;
         }
+    }
+
+    // 2. Prüfen ob Passwörter übereinstimmen
+    if (passwort1.value !== passwort2.value) {
+        e.preventDefault();
+        message.innerHTML = '<div class="error">Die Passwörter stimmen nicht überein.</div>';
+        return;
+    }
+
+    // 3. Prüfen ob AGB akzeptiert wurden
+    if (!checkbox.checked) {
+        e.preventDefault();
+        message.innerHTML = '<div class="error">Bitte akzeptiere die AGB.</div>';
+        return;
     }
 });
 </script>
