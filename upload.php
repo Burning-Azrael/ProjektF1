@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 session_start();
 
 // Zugriffsschutz: Nur Admins dürfen diese Seite sehen
@@ -7,6 +8,8 @@ if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
     exit;
 }
 
+=======
+>>>>>>> 1fe8a3c (verbesserungen im admin und verknpfung der formulare)
 // Datenbankverbindung
 $db_host = 'localhost';
 $db_user = 'root';
@@ -316,6 +319,7 @@ input[type="file"]::file-selector-button:hover {
     transform: translateY(1px);
 }
 
+<<<<<<< HEAD
 .btn-secondary {
     display: inline-flex;
     justify-content: center;
@@ -341,6 +345,8 @@ input[type="file"]::file-selector-button:hover {
     transform: translateY(-2px);
 }
 
+=======
+>>>>>>> 1fe8a3c (verbesserungen im admin und verknpfung der formulare)
 /* Meldungen */
 #message {
     margin-bottom: 15px;
@@ -434,12 +440,19 @@ input[type="file"]::file-selector-button:hover {
 
             <div class="button-group">
                 <button type="submit" class="btn-primary">Produkt hochladen</button>
+<<<<<<< HEAD
                 <a href="admin.php?logout=1" class="btn-secondary">Abmelden</a>
+=======
+>>>>>>> 1fe8a3c (verbesserungen im admin und verknpfung der formulare)
             </div>
 
         </form>
 
+<<<<<<< HEAD
         <a href="admin.php" class="back-link">← Zurück zum Admin Panel</a>
+=======
+        <a href="startseite.php" class="back-link">← Zurück zur Startseite</a>
+>>>>>>> 1fe8a3c (verbesserungen im admin und verknpfung der formulare)
 
     </div>
     
