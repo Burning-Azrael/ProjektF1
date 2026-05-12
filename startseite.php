@@ -257,7 +257,7 @@ p {
     </div>
 
     <!-- Admin Button -->
-    <a href="upload.php" class="admin-btn">⚙️ Adminbereich</a>
+    <a href="admin.php" class="admin-btn">⚙️ Adminbereich</a>
 
 </div>
 
