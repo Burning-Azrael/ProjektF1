@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Zugriffsschutz: Nur Admins dürfen diese Seite sehen
+if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
+    header("Location: admin.php"); // Umleitung zum Admin-Login
+    exit;
+}
+
 // Datenbankverbindung
 $db_host = 'localhost';
 $db_user = 'root';
@@ -308,6 +316,31 @@ input[type="file"]::file-selector-button:hover {
     transform: translateY(1px);
 }
 
+.btn-secondary {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: white;
+    border: 1px solid var(--glass-border);
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
 /* Meldungen */
 #message {
     margin-bottom: 15px;
@@ -401,11 +434,12 @@ input[type="file"]::file-selector-button:hover {
 
             <div class="button-group">
                 <button type="submit" class="btn-primary">Produkt hochladen</button>
+                <a href="admin.php?logout=1" class="btn-secondary">Abmelden</a>
             </div>
 
         </form>
 
-        <a href="startseite.php" class="back-link">← Zurück zur Startseite</a>
+        <a href="admin.php" class="back-link">← Zurück zum Admin Panel</a>
 
     </div>
     
