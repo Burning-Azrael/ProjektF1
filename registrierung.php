@@ -387,10 +387,7 @@ button[type="reset"]:active {
             <input type="password" id="passwort2" name="passwort2" placeholder="Passwort wiederholen" required>
         </div>
 
-        <div class="checkbox-group">
-            <input type="checkbox" id="agb" name="agb" required>
-            <label for="agb">Ich stimme den <a href="#">AGB</a> und der <a href="#">Datenschutzerklärung</a> zu.</label>
-        </div>
+        
 
         <div class="button-group">
             <button type="submit" class="btn">Registrieren</button>
@@ -427,12 +424,7 @@ document.getElementById("registerForm").addEventListener("submit", function(e) {
         return;
     }
 
-    // 3. Prüfen ob AGB akzeptiert wurden
-    if (!checkbox.checked) {
-        e.preventDefault();
-        message.innerHTML = '<div class="error">Bitte akzeptiere die AGB.</div>';
-        return;
-    }
+
 });
 </script>
 
