@@ -172,6 +172,7 @@ h2 {
     font-weight: 800;
     margin-bottom: 8px;
     background: linear-gradient(to right, #ffffff, #a0a0b0);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
