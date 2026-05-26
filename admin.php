@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     if (isset($admins[$username]) && password_verify($password, $admins[$username])) {
         $_SESSION['is_admin'] = true;
         $_SESSION['admin_username'] = $username;
-        header("Location: upload.php"); // Direkt zum Bilder-Upload nach dem Login
+        header("Location: admin.php"); // Zum Admin Panel nach dem Login
         exit;
     } else {
         $error = "Ungültiger Benutzername oder Passwort!";
@@ -331,24 +331,14 @@ ul li a:hover {
         <p class="subtitle">Willkommen zurück, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>!</p>
         
         <div class="admin-content">
-            <h3>Sicherheits-Information</h3>
-            <p>Um weitere PHP-Dateien zu schützen, kopieren Sie diesen Code an den Anfang der jeweiligen Datei:</p>
-            
-            <div class="code-block">
-&lt;?php
-session_start();
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-    die("Zugriff verweigert!");
-}
-?&gt;</div>
-            
-            <h3>Navigation</h3>
-            <ul>
-                <li><a href="startseite.php">→ Zurück zur Startseite</a></li>
-                <li><a href="upload.php">→ Bilder-Upload verwalten</a></li>
-            </ul>
 
-            <div class="button-group" style="margin-top: 40px;">
+            <h3>Navigation</h3>
+            <div class="button-group" style="margin-top: 15px;">
+                <a href="upload.php" class="btn btn-primary">Neues Produkt hochladen</a>
+                <a href="produkt_bearbeiten.php" class="btn btn-primary">Produkte bearbeiten</a>
+            </div>
+
+            <div class="button-group" style="margin-top: 25px;">
                 <a href="admin.php?logout=1" class="btn btn-secondary">Abmelden</a>
             </div>
         </div>

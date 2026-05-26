@@ -1,8 +1,47 @@
 <?php
+session_start();
 
+// Datenbankverbindung
+$db_host = 'localhost';
+$db_user = 'root';
+$db_pass = '';
+$db_name = 'f1shop'; 
 
+$conn = @new mysqli($db_host, $db_user, $db_pass, $db_name);
 
+$phpError = '';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['anmelden'])) {
+    $email = trim($_POST['email'] ?? '');
+    $passwort = $_POST['password'] ?? '';
+
+    if (empty($email) || empty($passwort)) {
+        $phpError = "Bitte füllen Sie alle Felder aus.";
+    } elseif ($conn->connect_error) {
+        $phpError = "Datenbankverbindung fehlgeschlagen.";
+    } else {
+        $stmt = $conn->prepare("SELECT kid, passwort, vorname FROM konto WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            if (password_verify($passwort, $user['passwort'])) {
+                // Login erfolgreich
+                $_SESSION['kid'] = $user['kid'];
+                $_SESSION['vorname'] = $user['vorname'];
+                header("Location: shop.php");
+                exit();
+            } else {
+                $phpError = "Ungültiges Passwort.";
+            }
+        } else {
+            $phpError = "Benutzer nicht gefunden.";
+        }
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -231,6 +270,12 @@ input:focus {
         
         <h1>Paddock Login</h1>
         <p class="subtitle">Melde dich an, um fortzufahren</p>
+
+        <?php if (!empty($phpError)): ?>
+            <div style="background: rgba(225, 6, 0, 0.15); color: #ff4d4d; padding: 10px; border-radius: 8px; border: 1px solid rgba(225, 6, 0, 0.3); font-size: 14px; margin-bottom: 20px;">
+                <?php echo htmlspecialchars($phpError); ?>
+            </div>
+        <?php endif; ?>
 
         <form action="" method="post">
             
